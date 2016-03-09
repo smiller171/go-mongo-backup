@@ -11,7 +11,7 @@ func main() {
 	}
 	fmt.Printf("mongodump is available at %s\n", path)
 
-	dumpCmd := exec.Command("mongodump", "--host", "10.10.1.103", "port", "27017", "--archive=file.txt")
+	dumpCmd := exec.Command("mongodump", "--host", "10.10.1.103", "--port", "27017", "--archive=file.txt")
 
 	dumpOut, err := dumpCmd.Output()
 	fmt.Println(string(dumpOut))
