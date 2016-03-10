@@ -18,14 +18,7 @@ func main() {
 	}
 	fmt.Printf("mongodump is available at %s\n", path)
 
-	dumpCmd := exec.Command(
-		"mongodump",
-		"--host",
-		"10.10.1.103",
-		"--port",
-		"27017",
-		"--archive"
-	)
+	dumpCmd := exec.Command("mongodump", "--host", "10.10.1.103", "--port", "27017", "--archive")
 	body, err := dumpCmd.StdoutPipe()
 	if err != nil {
 		// handle error
@@ -40,9 +33,7 @@ func main() {
 		io.Reader
 	}{body}
 
-	uploader := s3manager.NewUploader(
-		session.New(&aws.Config{Region: aws.String("us-east-1")})
-	)
+	uploader := s3manager.NewUploader(session.New(&aws.Config{Region: aws.String("us-east-1")}))
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Body:   bodyWrap,
 		Bucket: aws.String("net-openwhere-mongodb-snapshots-dev"),
