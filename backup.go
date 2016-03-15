@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"os/exec"
 	"time"
 
@@ -14,6 +15,14 @@ import (
 
 func dumpStart(d dumpTarget) result {
 	t := time.Now()
+	mongoHost := os.Getenv("MONGO_HOST")
+	mongoPort := os.Getenv("MONGO_PORT")
+	if mongoHost == "" {
+		mongoHost = "mongo"
+	}
+	if mongoPort == "" {
+		mongoPort = "27017"
+	}
 
 	var r result
 	path, err := exec.LookPath("mongodump")
@@ -24,7 +33,7 @@ func dumpStart(d dumpTarget) result {
 	}
 	fmt.Printf("mongodump is available at %s\n", path)
 
-	dumpCmd := exec.Command("mongodump", "--host", "10.10.1.103", "--port", "27017", "--archive")
+	dumpCmd := exec.Command("mongodump", "--host", mongoHost, "--port", mongoPort, "--archive")
 	body, err := dumpCmd.StdoutPipe()
 	if err != nil {
 		r.Result = "failed"
