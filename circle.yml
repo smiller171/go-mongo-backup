@@ -1,0 +1,27 @@
+machine:
+  services:
+    - docker
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+dependencies:
+  override:
+    - CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s'
+    - docker build -t "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG .
+test:
+  override:
+    - docker run --name mongo-backup -e "MONGO_HOST=$(/sbin/ip route|awk '/default/ { print  $3}')" -d -p 8080:8080 "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG
+    - curl -s localhost:8080/v0/dump | grep success
+deployment:
+  release:
+    tag: /.*/
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG
+  latest:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push "$DOCKER_USER"/go-mongo-backup

@@ -15,16 +15,16 @@ import (
 
 func dumpStart(d dumpTarget) result {
 	t := time.Now()
-	mongoHost := os.Getenv("MONGO_HOST")
-	mongoPort := os.Getenv("MONGO_PORT")
+	mongoHost := os.Getenv("MONGOHOST")
+	mongoPort := os.Getenv("MONGOPORT")
 	if mongoHost == "" {
 		mongoHost = "mongo"
 	}
 	if mongoPort == "" {
 		mongoPort = "27017"
 	}
-
 	var r result
+
 	path, err := exec.LookPath("mongodump")
 	if err != nil {
 		log.Fatal("mongodump could not be found")
