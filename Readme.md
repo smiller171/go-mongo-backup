@@ -8,7 +8,7 @@ This application runs alongside Mongo to create a simple API endpoint that can b
 ## Example
 
 ```bash
-curl -XPOST 'http://192.168.99.100:8080/v0/dump' -d \
+curl -XPOST 'http://localhost:8080/v0/dump' -d \
 '{
     "bucket": "org-mongodb-snapshots",
     "path": "/dev/"
