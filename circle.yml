@@ -12,7 +12,7 @@ dependencies:
     - docker build -t "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG .
 test:
   override:
-    - docker run --name mongo-backup -e "MONGO_HOST=$(/sbin/ip route | awk '/default/ { print  $3}')" -d -p 8080:8080 "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG
+    - docker run --volume ~/.aws:/root/.aws --name mongo-backup -e "MONGO_HOST=$(/sbin/ip route | awk '/default/ { print  $3}')" -d -p 8080:8080 "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG
     - curl -XPOST 'localhost:8080/v0/dump' -d '{"bucket":"net-openwhere-mongodb-snapshots-dev","path":"/mongo-backup-test/"}' | grep success
 deployment:
   release:
