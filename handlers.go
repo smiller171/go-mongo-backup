@@ -41,7 +41,7 @@ func dumpCreate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(d); err != nil {
-		log.Println("Failed", err)
+		log.Println("Failed to encode json", err)
 	}
 
 }
