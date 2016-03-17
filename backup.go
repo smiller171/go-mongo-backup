@@ -15,8 +15,8 @@ import (
 
 func dumpStart(d dumpTarget) result {
 	t := time.Now()
-	mongoHost := os.Getenv("MONGOHOST")
-	mongoPort := os.Getenv("MONGOPORT")
+	mongoHost := os.Getenv("MONGO_HOST")
+	mongoPort := os.Getenv("MONGO_PORT")
 	if mongoHost == "" {
 		mongoHost = "mongo"
 	}
