@@ -28,22 +28,22 @@ func dumpStart(d dumpTarget) result {
 	path, err := exec.LookPath("mongodump")
 	if err != nil {
 		log.Println("Could not find Mongodump", err)
-		r.Result = "Could not find Mongodump\n" + err.Error()
+		r.Result = "Could not find Mongodump " + err.Error()
 		return r
 	}
-	fmt.Printf("mongodump is available at %s\n", path)
+	fmt.Printf("mongodump is available at %s ", path)
 
 	dumpCmd := exec.Command("mongodump", "--host", mongoHost, "--port", mongoPort, "--archive")
 	body, err := dumpCmd.StdoutPipe()
 	if err != nil {
 		log.Println("failed executing mongodump", err)
-		r.Result = "failed executing mongodump\n" + err.Error()
+		r.Result = "failed executing mongodump " + err.Error()
 		return r
 	}
 
 	if err := dumpCmd.Start(); err != nil {
 		log.Println("failed starting mongodump", err)
-		r.Result = "failed starting mongodump\n" + err.Error()
+		r.Result = "failed starting mongodump " + err.Error()
 		return r
 	}
 
@@ -60,13 +60,13 @@ func dumpStart(d dumpTarget) result {
 	})
 	if err != nil {
 		log.Println("Failed to upload", err)
-		r.Result = "Failed to upload\n" + err.Error()
+		r.Result = "Failed to upload " + err.Error()
 		return r
 	}
 
 	if err := dumpCmd.Wait(); err != nil {
 		log.Println("Failed to dump", err)
-		r.Result = "Failed to dump\n" + err.Error()
+		r.Result = "Failed to dump " + err.Error()
 		return r
 	}
 
