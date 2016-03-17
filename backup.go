@@ -65,7 +65,7 @@ func dumpStart(d dumpTarget) result {
 	}
 
 	if err := dumpCmd.Wait(); err != nil {
-		log.Fatalln("Failed to dump", err)
+		log.Println("Failed to dump", err)
 		r.Result = "Failed to dump\n" + err.Error()
 		return r
 	}
