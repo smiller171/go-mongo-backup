@@ -8,6 +8,7 @@ experimental:
         - master
 dependencies:
   override:
+    - go get -t -d -v ./...
     - CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s'
     - docker build -t "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG .
 test:
