@@ -7,7 +7,7 @@ experimental:
       only:
         - master
 dependencies:
-  override:
+  post:
     - CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s'
     - docker build -t "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG .
 test:
