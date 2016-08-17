@@ -1,3 +1,4 @@
 go-mongo-backup
 file.txt
 lambda.zip
+lambda*.zip
