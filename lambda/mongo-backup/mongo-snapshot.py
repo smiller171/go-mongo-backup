@@ -2,7 +2,7 @@ import logging
 import boto3
 import json
 import requests
-import datetime
+import sys
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -12,7 +12,6 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
 # change this to whatever your table name is
 table = dynamodb.Table('mongo-backups')
-now = datetime.datetime.now()
 
 # I don't fully understand the reason for this. Following example
 # http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Python.04.html
@@ -53,10 +52,15 @@ def handler(event={}, context={}):
 
         # trigger dump
         logger.info("triggering dump")
-        response = requests.put(
-            url,
-            data=json.dumps(target)
-            )
+        try:
+            response = requests.post(
+                url,
+                data=json.dumps(target)
+                )
+        except requests.exceptions.RequestException as e:
+            logger.error(e)
+            sys.exit(1)
+
         logger.info(response.content)
         logger.info("new snapshot started at " + url)
 
