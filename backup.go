@@ -14,6 +14,8 @@ import (
 )
 
 func dumpStart(d dumpTarget) result {
+	log.Println("Starting dump")
+
 	t := time.Now()
 	mongoHost := os.Getenv("MONGOHOST")
 	mongoPort := os.Getenv("MONGOPORT")
