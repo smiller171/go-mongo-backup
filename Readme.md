@@ -52,6 +52,13 @@ To start a backup:
 }
 ```
 
+## Lambda build
+1.  Test the lambda function
+        python lambda/mongo-backup/mongo-snapshot.py
+2.  create zip
+        ./lambdabuild.sh
+3.  Create Lambda function using zip file. (Automated in pod config)
+
 ## Tests
 
 ToDo
