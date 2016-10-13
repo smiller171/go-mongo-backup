@@ -3,6 +3,7 @@ import boto3
 import json
 import requests
 import sys
+from os import environ
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
