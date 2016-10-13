@@ -10,20 +10,22 @@ dependencies:
   override:
     - go get -t -d -v ./...
     - CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s'
-    - docker build -t "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG .
+    - docker build -t local_user/go-mongo-backup:${CIRCLE_TAG} .
 test:
   override:
     - docker run --name mongo -d mongo
-    - docker run --volume ~/.aws:/root/.aws --name mongo-backup --link mongo -d -p 8080:8080 "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG
+    - docker run --volume ~/.aws:/root/.aws --name mongo-backup --link mongo -d -p 8080:8080 local_user/go-mongo-backup:${CIRCLE_TAG}
     - curl -s -XPOST 'localhost:8080/v0/dump' -d '{"bucket":"net-openwhere-mongodb-snapshots-dev","path":"/mongo-backup-test/"}' | tee out.txt && cat out.txt | grep success
 deployment:
   release:
     tag: /.*/
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push "$DOCKER_USER"/go-mongo-backup:$CIRCLE_TAG
+      - docker tag local_user/go-mongo-backup:${CIRCLE_TAG} ${DOCKER_USER}/go-mongo-backup:${CIRCLE_TAG}
+      - docker push ${DOCKER_USER}/go-mongo-backup:${CIRCLE_TAG}
   latest:
     branch: master
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push "$DOCKER_USER"/go-mongo-backup
+      - docker tag local_user/go-mongo-backup ${DOCKER_USER}/go-mongo-backup
+      - docker push ${DOCKER_USER}/go-mongo-backup
