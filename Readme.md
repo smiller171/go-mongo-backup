@@ -41,6 +41,13 @@ docker run --name mongo-backup -d -p 8080:8080 \
 ```
 This sets the mongo address to the IP of the Docker host.
 
+## Configuration
+This Lambda is configured with the following environment variables:
+
+    URL="http://mongodb.mydomain.com:8080"
+    BUCKET="mybucket"
+    ROOT_PATH="/backup/path/"
+
 ## API Reference
 
 To start a backup:  
@@ -54,10 +61,15 @@ To start a backup:
 
 ## Lambda build
 1.  Test the lambda function
-        python lambda/mongo-backup/mongo-snapshot.py
+  1.  Set environment variables
+            export URL="http://mongodb.mydomain.com:8080"
+            export BUCKET="mybucket"
+            export ROOT_PATH="/path/for/backup/storage/"
+  2.  Run lambda
+            python lambda/mongo-backup/mongo-snapshot.py
 2.  create zip
-        ./lambdabuild.sh
-3.  Create Lambda function using zip file. (Automated in pod config)
+        ./lambuild.sh
+3.  Create Lambda function using zip file. **Must pass environment variables** (Automated in pod config)
 
 ## Tests
 
