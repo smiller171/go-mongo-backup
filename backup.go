@@ -83,15 +83,14 @@ func dumpStart(d dumpTarget) result {
 		log.Println("Successfully uploaded to", result.Location)
 		r.Result = "success"
 		return r
-	} else {
-		if err := dumpCmd.Wait(); err != nil {
-			log.Println("Failed to dump", err)
-			r.Result = "Failed to dump " + err.Error()
-			return r
-		}
-
-		log.Println("Successfully dumped to null")
-		r.Result = "success"
+	}
+	if err := dumpCmd.Wait(); err != nil {
+		log.Println("Failed to dump", err)
+		r.Result = "Failed to dump " + err.Error()
 		return r
 	}
+
+	log.Println("Successfully dumped to null")
+	r.Result = "success"
+	return r
 }
