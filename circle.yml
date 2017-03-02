@@ -13,7 +13,7 @@ dependencies:
     - docker build -t local_user/go-mongo-backup:${CIRCLE_TAG} .
 test:
   override:
-    - docker run --name mongo -d mongo
+    - docker run --name mongo -d mongo:2.6.12
     - docker run --volume ~/.aws:/root/.aws --name mongo-backup --link mongo -d -p 8080:8080 local_user/go-mongo-backup:${CIRCLE_TAG}
     - curl -s -XPOST 'localhost:8080/v0/dump' -d '{"bucket":"net-openwhere-mongodb-snapshots-dev","path":"/mongo-backup-test/"}' | tee out.txt && cat out.txt | grep success
     - grep -q -i "fail\|success" <(docker logs --follow mongo-backup 2>&1)
