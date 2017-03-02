@@ -18,6 +18,7 @@ def handler(event={}, context={}):
     domain = environ['URL'].strip('/ ')
     bucket = environ['BUCKET'].strip()
     basePath = environ['ROOT_PATH'].strip()
+    region = environ['AWS_DEFAULT_REGION']
 
     logger.info("bucket is " + bucket)
     logger.info("base_path is " + basePath)
@@ -25,7 +26,8 @@ def handler(event={}, context={}):
     logger.info("setting mongodump json")
     target = {
         "bucket": bucket,
-        "path": path.join("/", basePath, "")
+        "path": path.join("/", basePath, ""),
+        "region": region
     }
     logger.info("mongodump json is " + json.dumps(target))
 

@@ -15,6 +15,12 @@ import (
 
 func dumpStart(d dumpTarget) result {
 	log.Println("Starting dump")
+	var region string
+	if d.Region != "" {
+		region = d.Region
+	} else {
+		region = "us-east-1"
+	}
 
 	t := time.Now()
 	mongoHost := os.Getenv("MONGOHOST")
@@ -54,25 +60,37 @@ func dumpStart(d dumpTarget) result {
 		io.Reader
 	}{body}
 
-	uploader := s3manager.NewUploader(session.New(&aws.Config{Region: aws.String("us-east-1")}))
-	result, err := uploader.Upload(&s3manager.UploadInput{
-		Body:   bodyWrap,
-		Bucket: aws.String(d.Bucket),
-		Key:    aws.String(d.Path + t.Format("2006-01-02T15:04")),
-	})
-	if err != nil {
-		log.Println("Failed to upload", err)
-		r.Result = "Failed to upload " + err.Error()
+	if d.Bucket != "" {
+		uploader := s3manager.NewUploader(session.New(&aws.Config{Region: aws.String(region)}))
+		result, err := uploader.Upload(&s3manager.UploadInput{
+			Body:   bodyWrap,
+			Bucket: aws.String(d.Bucket),
+			Key:    aws.String(d.Path + t.Format("2006-01-02T15:04")),
+		})
+
+		if err != nil {
+			log.Println("Failed to upload", err)
+			r.Result = "Failed to upload " + err.Error()
+			return r
+		}
+
+		if err := dumpCmd.Wait(); err != nil {
+			log.Println("Failed to dump", err)
+			r.Result = "Failed to dump " + err.Error()
+			return r
+		}
+
+		log.Println("Successfully uploaded to", result.Location)
+		r.Result = "success"
 		return r
 	}
-
 	if err := dumpCmd.Wait(); err != nil {
 		log.Println("Failed to dump", err)
 		r.Result = "Failed to dump " + err.Error()
 		return r
 	}
 
-	log.Println("Successfully uploaded to", result.Location)
+	log.Println("Successfully dumped to null")
 	r.Result = "success"
 	return r
 }

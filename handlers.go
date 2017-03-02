@@ -21,6 +21,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 func dumpCreate(w http.ResponseWriter, r *http.Request) {
 	var target dumpTarget
+	var output string
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -39,7 +40,12 @@ func dumpCreate(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode("Backup started successfully"); err != nil {
+	if target.Bucket != "" {
+		output = "Backup started successfully"
+	} else {
+		output = "Backup started successfully, dumping to null"
+	}
+	if err := json.NewEncoder(w).Encode(output); err != nil {
 		log.Println("Failed to encode json", err)
 	}
 
