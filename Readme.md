@@ -55,7 +55,8 @@ To start a backup:
 ```json
 {
     "bucket": "mybucket",
-    "path": "/path/to/backup/dir/"
+    "path": "/path/to/backup/dir/",
+    "region": "us-east-1"
 }
 ```
 
@@ -65,6 +66,7 @@ To start a backup:
             export URL="http://mongodb.mydomain.com:8080"
             export BUCKET="mybucket"
             export ROOT_PATH="/path/for/backup/storage/"
+            export AWS_DEFAULT_REGION="us-east-1"
   2.  Run lambda
             python lambda/mongo-backup/mongo-snapshot.py
 2.  create zip

@@ -15,6 +15,12 @@ import (
 
 func dumpStart(d dumpTarget) result {
 	log.Println("Starting dump")
+	var region string
+	if d.Region != "" {
+		region = d.Region
+	} else {
+		region = "us-east-1"
+	}
 
 	t := time.Now()
 	mongoHost := os.Getenv("MONGOHOST")
@@ -55,7 +61,7 @@ func dumpStart(d dumpTarget) result {
 	}{body}
 
 	if d.Bucket != "" {
-		uploader := s3manager.NewUploader(session.New(&aws.Config{Region: aws.String("us-east-1")}))
+		uploader := s3manager.NewUploader(session.New(&aws.Config{Region: aws.String(region)}))
 		result, err := uploader.Upload(&s3manager.UploadInput{
 			Body:   bodyWrap,
 			Bucket: aws.String(d.Bucket),
