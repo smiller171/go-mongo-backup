@@ -5,3 +5,4 @@ lambda*.zip
 .DS_Store
 test.zip
 mongosnapshot.zip
+*.pyc
