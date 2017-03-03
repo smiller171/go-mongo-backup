@@ -1,6 +1,8 @@
 machine:
   services:
     - docker
+  post:
+    - aws configure set default.region us-east-1
 experimental:
   notify:
     branches:
@@ -19,15 +21,13 @@ test:
     - grep -q -i "fail\|success" <(docker logs --follow mongo-backup 2>&1)
     - docker logs mongo-backup 2>&1 | grep -i "success"
 deployment:
-  release:
-    tag: /.*/
+  dev:
+    branch: develop
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker tag local_user/go-mongo-backup:${CIRCLE_TAG} ${DOCKER_USER}/go-mongo-backup:${CIRCLE_TAG}
-      - docker push ${DOCKER_USER}/go-mongo-backup:${CIRCLE_TAG}
-  latest:
+      - $(aws ecr get-login)
+      - build/build-docker.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} ${CIRCLE_BRANCH}
+  sit:
     branch: master
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker tag local_user/go-mongo-backup ${DOCKER_USER}/go-mongo-backup
-      - docker push ${DOCKER_USER}/go-mongo-backup
+      - $(aws ecr get-login)
+      - build/build-docker.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} ${CIRCLE_BRANCH}
