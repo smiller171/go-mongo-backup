@@ -44,7 +44,7 @@ Resources:
     Type: "AWS::ECS::Service"
     Properties:
       Cluster:  !Ref cluster
-      DesiredCount: 2
+      DesiredCount: 1
       LoadBalancers:
         -
           TargetGroupArn: !Ref TargetGroup
