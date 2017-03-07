@@ -33,8 +33,8 @@ func dumpCreate(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(body, &target); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(422) //unprocessable entity
-		if err := json.NewEncoder(w).Encode(err); err != nil {
-			log.Println("Failed", err)
+		if e := json.NewEncoder(w).Encode(err); e != nil {
+			log.Println("Failed", e)
 		}
 	}
 
