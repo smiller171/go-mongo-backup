@@ -276,13 +276,7 @@ Resources:
 Outputs:
   ALBId:
     Description: ALBId
-    Value:
-      Fn::GetAtt:
-      - CustomResource
-      - ALBId
+    Value: !GetAtt CustomResource.ALBId
   TGTId:
     Description: TGTId
-    Value:
-      Fn::GetAtt:
-      - CustomResource
-      - TGTId
+    Value: !GetAtt CustomResource.TGTId
