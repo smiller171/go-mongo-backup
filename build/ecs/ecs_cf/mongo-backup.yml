@@ -13,6 +13,9 @@ Parameters:
   name:
     Description: Service Name i.e. jobmanager
     Type: String
+  namespace:
+    Description: Docker namespace
+    Type: String
   priority:
     Description: ALB priority
     Type: Number
@@ -24,12 +27,6 @@ Parameters:
     Type: String
   version:
     Description: Semantic version of service
-    Type: String
-  namespace:
-    Description: Docker namespace
-    Type: String
-  mongoSnapshotBucket:
-    Description: S3 bucket where Mongo snapshots will be stored
     Type: String
 
 Resources:
@@ -233,7 +230,7 @@ Resources:
       Description: Calls mongo-backup agent to start snapshot
       Environment:
         Variables:
-          BUCKET: !Ref mongoSnapshotBucket
+          BUCKET: !Sub net-platform-mongodb-snapshots-${env}
           ROOT_PATH: /
           URL:
             Fn::Join:
