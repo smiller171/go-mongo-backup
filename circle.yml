@@ -10,6 +10,7 @@ experimental:
         - master
 dependencies:
   override:
+    - docker pull mongo:2.6.12
     - go get -t -d -v ./...
     - CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s'
     - docker build -t local_user/go-mongo-backup:${CIRCLE_TAG} .
@@ -26,10 +27,12 @@ deployment:
     commands:
       - $(aws ecr get-login)
       - build/build-docker.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} ${CIRCLE_BRANCH}
+      - build/build-lambda.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} net-openwhere-devops-${DEV_ENV_NAME}
       - export VERSION=$(${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1}) && docker run --volume ~/.aws:/root/.aws --volume ${PWD}/build/ecs:/usr/src/app/ecs 639193537090.dkr.ecr.us-east-1.amazonaws.com/release/ecs-deploy ./cfUpdate.py --elb-name-suffix 2 --cfparams --cluster core-${DEV_ENV_NAME} --env ${DEV_ENV_NAME} --region ${DEV_REGION} --version ${VERSION} --namespace ${CIRCLE_BRANCH}
   sit:
     branch: master
     commands:
       - $(aws ecr get-login)
       - build/build-docker.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} ${CIRCLE_BRANCH}
+      - build/build-lambda.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} net-openwhere-devops-${SIT_ENV_NAME}
       - export VERSION=$(${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1}) && docker run --volume ${PWD}/build/ecs:/usr/src/app/ecs -e AWS_ACCESS_KEY_ID=${SIT_AWS_KEY} -e AWS_SECRET_ACCESS_KEY=${SIT_AWS_SECRET} 639193537090.dkr.ecr.us-east-1.amazonaws.com/release/ecs-deploy ./cfUpdate.py --elb-name-suffix 2 --cfparams --cluster core-${SIT_ENV_NAME} --env ${SIT_ENV_NAME} --region ${SIT_REGION} --version ${VERSION} --namespace ${CIRCLE_BRANCH}

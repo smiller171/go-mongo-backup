@@ -70,8 +70,12 @@ To start a backup:
   2.  Run lambda
             python lambda/mongo-backup/mongo-snapshot.py
 2.  create zip
-        ./lambuild.sh
+        ./build/lambda-build.sh ${VERSION} ${BUCKET}
 3.  Create Lambda function using zip file. **Must pass environment variables** (Automated in pod config)
+
+## Container build
+1. $(aws ecr get-login)
+2. ./build/build-docker.sh ${VERSION} ${NAMESPACE}
 
 ## Tests
 

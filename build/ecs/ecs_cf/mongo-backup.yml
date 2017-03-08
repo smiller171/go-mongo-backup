@@ -169,7 +169,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: !Sub net-openwhere-devops-${env}
-        S3Key: !Sub lambda/mongo-backup-${version}.zip
+        S3Key: !Sub lambda/mongoBackup-${version}.zip
       Description: Calls mongo-backup agent to start snapshot
       Environment:
         Variables:
@@ -178,7 +178,7 @@ Resources:
           URL:
             Fn::Join:
               - ""
-              - - "http://mongodb."
+              - - "http://core2-proxy."
                 - Fn::ImportValue: !Sub ${env}-PrivateDomain
                 - "/mongo-backup/"
       FunctionName: !Sub ${env}-mongo-backup
