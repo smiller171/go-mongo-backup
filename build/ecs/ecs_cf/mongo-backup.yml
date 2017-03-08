@@ -28,6 +28,9 @@ Parameters:
   namespace:
     Description: Docker namespace
     Type: String
+  mongoSnapshotBucket:
+    Description: S3 bucket where Mongo snapshots will be stored
+    Type: String
 
 Resources:
   CustomResource:
@@ -197,6 +200,78 @@ Resources:
                   - s3:ListBucketMultipartUploads
                   - s3:ListMultipartUploadParts
                 Effect: Allow
+  LambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          -
+            Action: "sts:AssumeRole"
+            Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+      Path: "/"
+    Type: "AWS::IAM::Role"
+
+  LambdaSG:
+    Properties:
+      GroupDescription: Security Group for mongo-backup Lambda
+      Tags:
+        - Key: Environment
+          Value: !Ref env
+        - Key: Name
+          Value: !Sub ${env}-mongo-backup-lambda-sg
+      VpcId: !Ref vpcid
+    Type: "AWS::EC2::SecurityGroup"
+
+  Lambda:
+    Properties:
+      Code:
+        S3Bucket: !Sub net-openwhere-devops-${env}
+        S3Key: !Sub lambda/mongo-backup-${version}.zip
+      Description: Calls mongo-backup agent to start snapshot
+      Environment:
+        Variables:
+          BUCKET: !Ref mongoSnapshotBucket
+          ROOT_PATH: /
+          URL:
+            Fn::Join:
+              - ""
+              - - "http://mongodb."
+                - Fn::ImportValue: !Sub ${env}-PrivateDomain
+                - "/mongo-backup/"
+      FunctionName: !Sub ${env}-mongo-backup
+      Handler: mongo-snapshot.handler
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: python2.7
+      Timeout: 30
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt LambdaSG.GroupId
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${env}-PrivateSubnet1Id
+          - Fn::ImportValue: !Sub ${env}-PrivateSubnet2Id
+          - Fn::ImportValue: !Sub ${env}-PrivateSubnet3Id
+    Type: "AWS::Lambda::Function"
+  ScheduledEvent:
+    Properties:
+      Description: Trigger snapshot once a day
+      Name: !Sub MongoBackupEvent-${env}
+      ScheduleExpression: "cron(30 6 ? * * *)"
+      State: ENABLED
+      Targets:
+        -
+          Arn: !GetAtt Lambda.Arn
+          Id: !Sub ${env}-MongoBackupLambda
+    Type: "AWS::Events::Rule"
+  LambdaInvokePermission:
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref Lambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ScheduledEvent.Arn
+    Type: "AWS::Lambda::Permission"
 
 Outputs:
   ALBId:
