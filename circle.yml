@@ -27,7 +27,7 @@ deployment:
     commands:
       - $(aws ecr get-login)
       - build/build-docker.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} ${CIRCLE_BRANCH}
-      - AWS_ACCESS_KEY_ID=${SIT_AWS_KEY} AWS_SECRET_ACCESS_KEY=${SIT_AWS_SECRET} build/build-lambda.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} net-openwhere-devops-${DEV_ENV_NAME}
+      - export AWS_ACCESS_KEY_ID=${SIT_AWS_KEY} && export AWS_SECRET_ACCESS_KEY=${SIT_AWS_SECRET} && build/build-lambda.sh ${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} net-openwhere-devops-${DEV_ENV_NAME}
       - export VERSION=${CIRCLE_BUILD_NUM}_${CIRCLE_SHA1} && docker run --volume ~/.aws:/root/.aws --volume ${PWD}/build/ecs:/usr/src/app/ecs 639193537090.dkr.ecr.us-east-1.amazonaws.com/release/ecs-deploy ./cfUpdate.py --elb-name-suffix 2 --cfparams --cluster core-${DEV_ENV_NAME} --env ${DEV_ENV_NAME} --region ${DEV_REGION} --version ${VERSION} --namespace ${CIRCLE_BRANCH}
   sit:
     branch: master
