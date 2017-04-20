@@ -15,8 +15,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - aws sns publish --topic-arn - echo Build completed on `date`
-      - 'aws sns publish --topic-arn arn:aws:sns:us-east-1:455004181459:go-mongo-backup --message '"{\"buildId\": \"$CODEBUILD_BUILD_ID\"}"'
+      - aws sns publish --topic-arn arn:aws:sns:us-east-1:455004181459:go-mongo-backup --message '"{\"buildId\": \"$CODEBUILD_BUILD_ID\"}"'
 artifacts:
   files:
     - build/ecs/ecs_cf/archive.yml
