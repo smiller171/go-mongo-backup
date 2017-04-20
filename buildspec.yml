@@ -1,0 +1,24 @@
+version: 0.1
+
+environment_variables:
+  plaintext:
+    CONTAINER_NAME: 'mongodump'
+    DOCKER_REGISTRY: "639193537090.dkr.ecr.us-east-1.amazonaws.com"
+    IMAGE_NAME: "go-mongo-backup"
+    PRIORITY: 135
+
+phases:
+  build:
+    commands:
+      - echo "Build phase"
+      - exit 1
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - aws sns publish --topic-arn - echo Build completed on `date`
+      - 'aws sns publish --topic-arn arn:aws:sns:us-east-1:455004181459:go-mongo-backup --message '"{\"buildId\": \"$CODEBUILD_BUILD_ID\"}"'
+artifacts:
+  files:
+    - build/ecs/ecs_cf/archive.yml
+    - archive.parameters
+  discard-paths: yes
